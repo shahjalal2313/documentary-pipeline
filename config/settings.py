@@ -7,6 +7,7 @@ class Config:
     OPENAI_API_KEY         = os.getenv("OPENAI_API_KEY")
     RUNPOD_API_KEY         = os.getenv("RUNPOD_API_KEY")
     RUNPOD_ENDPOINT_ID     = os.getenv("RUNPOD_ENDPOINT_ID")
+    COMFYUI_URL            = os.getenv("COMFYUI_URL", "")
 
     # Budget guard
     MONTHLY_BUDGET_USD     = 20.00
