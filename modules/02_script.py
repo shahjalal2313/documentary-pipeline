@@ -255,7 +255,7 @@ def generate_full_production_package(topic: str) -> dict:
     package = {**meta, "scenes": all_scenes}
 
     # Save to disk
-    slug = topic[:40].replace(" ", "_").lower()
+    slug = topic[:40].replace(" ", "_").replace(":", "").replace("?", "").replace("/", "").lower()
     save_path = Path("output/scripts/" + slug + ".json")
     save_path.parent.mkdir(parents=True, exist_ok=True)
     save_path.write_text(json.dumps(package, indent=2))
