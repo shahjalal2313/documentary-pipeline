@@ -3,8 +3,16 @@
 # Call it via SSH or include in the RunPod worker script.
 import os
 import subprocess
+import sys
 from pathlib import Path
 from loguru import logger
+
+# Monkeypatch pkgutil for Python 3.12 compatibility (ImpImporter was removed)
+import pkgutil
+if not hasattr(pkgutil, 'ImpImporter'):
+    class ImpImporter:
+        pass
+    pkgutil.ImpImporter = ImpImporter
 
 def get_audio_duration(audio_path: str) -> float:
     """Get exact audio duration using ffprobe."""
