@@ -168,6 +168,7 @@ Rules:
 - ONE subject per scene, ONE movement per scene
 - Either subject moves OR camera moves, never both
 - scene_type: "human" for people scenes, "environment" for locations/B-roll
+- sound_profile: "ambient" for background noise, "foley" for specific sound effects, "silent" to skip sound, "music_only" for cinematic/abstract shots
 
 Return ONLY this JSON:
 {{
@@ -182,6 +183,7 @@ Return ONLY this JSON:
       "lighting": "golden hour",
       "emotion": "hopeful",
       "scene_type": "environment",
+      "sound_profile": "foley",
       "model": "wan2",
       "color_palette": "warm_amber",
       "comfyui_prompt": "Cinematic video prompt under 50 words, specific lighting and camera, no text, no crowds",
