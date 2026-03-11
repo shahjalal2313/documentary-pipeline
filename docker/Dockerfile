@@ -1,5 +1,5 @@
-# Use NVIDIA CUDA base image for high-performance GPU tasks
-FROM nvidia/cuda:12.4.1-cudnn-devel-ubuntu22.04
+# Use NVIDIA CUDA 12.8 base image for RTX 5090 (Blackwell) support
+FROM nvidia/cuda:12.8.0-cudnn-devel-ubuntu22.04
 
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive
@@ -7,9 +7,9 @@ ENV PYTHONUNBUFFERED=1
 ENV PATH="/workspace/venv/bin:$PATH"
 
 # 1. Install System Dependencies
-RUN apt-get update && apt-get install -y 
-    git git-lfs aria2 ffmpeg libgl1-mesa-glx libglib2.0-0 wget build-essential 
-    python3.12 python3.12-venv python3.12-dev 
+RUN apt-get update && apt-get install -y \
+    git git-lfs aria2 ffmpeg libgl1-mesa-glx libglib2.0-0 wget build-essential \
+    python3.12 python3.12-venv python3.12-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # 2. Set up Workspace
@@ -20,10 +20,14 @@ RUN python3.12 -m venv /workspace/venv
 ENV VIRTUAL_ENV=/workspace/venv
 RUN /workspace/venv/bin/pip install --upgrade pip setuptools wheel
 
-# 4. Install ComfyUI
+# 4. Install PyTorch 2.8+ (Required for RTX 5090)
+RUN /workspace/venv/bin/pip install "torch>=2.8.0" "torchaudio>=2.8.0" "torchvision>=0.19.0" --index-url https://download.pytorch.org/whl/cu128
+
+# 5. Install ComfyUI
 RUN git clone https://github.com/comfyanonymous/ComfyUI.git /workspace/ComfyUI
 WORKDIR /workspace/ComfyUI
 RUN /workspace/venv/bin/pip install -r requirements.txt
+
 
 # 5. Install Custom Nodes
 WORKDIR /workspace/ComfyUI/custom_nodes
