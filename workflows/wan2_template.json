@@ -34,8 +34,8 @@
   },
   "74": {
     "inputs": {
-      "width": 640,
-      "height": 640,
+      "width": 1280,
+      "height": 720,
       "length": 81,
       "batch_size": 1
     },

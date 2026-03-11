@@ -18,11 +18,26 @@ DOCUMENTARY STRUCTURE (never deviate):
 - Chapter 5 REVELATION (7:30-8:30): The thing nobody talks about
 - Chapter 6 LESSON (8:30-9:30): What we learn, personal relevance to viewer
 
-SCENE RULES (critical for AI video generation):
-- NEVER write crowd scenes (AI cannot generate them well)
-- NEVER write extreme face closeups (use medium shots only)
-- Every scene: ONE subject, ONE movement, clear emotion
-- Camera: either subject moves OR camera moves — NEVER both simultaneously
-- Alternate rhythm: wide establishing → medium → detail → wide
+SCENE RULES (Critical for Wan 2.2 Cinematic Quality):
+- Prompt Structure: Every scene prompt must be structured in 4 parts:
+    1. Motion: The primary action with concrete verbs.
+    2. Camera: Professional movement (Dolly In, Orbital, Slow Pan, Crane Shot, 50mm Anamorphic, etc.)
+    3. Environment: Specific lighting (rim-light, golden hour, volumetric haze) and atmosphere.
+    4. Intensity: Pacing modifiers (gradually increasing, imperceptibly slow, locked composition).
+- Composition: 30% subject content, 70% cinematography focus.
+- Framing: Wide or Medium shots ONLY. Never extreme close-ups on faces.
+- Human Subjects: Use one subject only, avoid crowds. Maintain visual continuity across scenes.
+- Ending: Always end with: "cinematic documentary, teal and orange grade, anamorphic lens, high-detail textures."
+- Negative Concepts: NEVER mention "text," "logos," "watermarks," or "deformations."
+- Visual Thread: Maintain the same environmental color palette within a chapter.
+
+VISUAL STYLE GUIDE (Mixed Media Documentary):
+- THE TIMELINE LOOK:
+    *   CHAPTER 1 & 2 (Origins): "Archival Look". 16mm film grain, 4:3 aspect ratio, warm sepia or faded colors, vintage lenses.
+    *   CHAPTER 3 to 6 (The Event): "Modern Cinematic". 35mm Anamorphic, deep blues/teals, high contrast, shallow depth of field (bokeh).
+- DIRECTOR'S CAMERA:
+    *   Lenses: 24mm (Epic/Establishing), 50mm (Natural/Observation), 85mm (Intimate/Detail).
+    *   Angles: Low-angle for power/success, High-angle for vulnerability/collapse.
+    *   Movement: Slow Dolly In, Slow Slide, 1% Zoom, or Static Observational. NO shaky cam.
 
 OUTPUT: Valid JSON only. No markdown. No text outside JSON.

@@ -159,16 +159,24 @@ Return ONLY this JSON (no extra text):
 CALL_B_USER = """
 Generate exactly 6 video scenes for Chapter {chapter_id} ({chapter_name}) of a documentary about: {topic}
 
-Chapter narration context:
+PREVIOUS VISUAL CONTEXT (Maintain continuity with this):
+{prev_visual_context}
+
+CHAPTER NARRATION:
 {narration}
 
+CINEMATOGRAPHER RULES (Wan 2.2):
+Structure every "comfyui_prompt" in exactly 4 parts:
+1. Motion: Primary action with concrete verbs.
+2. Camera: Professional cinematic movement (e.g., 50mm Anamorphic Slow Dolly In, 85mm Static Observational).
+3. Environment: Specific lighting (rim-light, golden hour glow) and atmosphere.
+4. Intensity: Pacing modifiers (gradually increasing, imperceptibly slow, locked composition).
+
 Rules:
-- No crowd scenes ever
-- No extreme face closeups, use medium shots
-- ONE subject per scene, ONE movement per scene
-- Either subject moves OR camera moves, never both
-- scene_type: "human" for people scenes, "environment" for locations/B-roll
-- sound_profile: "ambient" for background noise, "foley" for specific sound effects, "silent" to skip sound, "music_only" for cinematic/abstract shots
+- 30% subject content, 70% cinematography focus.
+- Wide or Medium shots ONLY — no face closeups.
+- model: "mochi" for humans, "wan2" for environments. (Note: use "wan2" as primary).
+- Always end prompt with: "cinematic documentary, teal and orange grade, anamorphic lens, high-detail textures."
 
 Return ONLY this JSON:
 {{
@@ -177,33 +185,26 @@ Return ONLY this JSON:
       "scene_id": {scene_id_start},
       "chapter_id": {chapter_id},
       "duration_sec": 5,
-      "subject": "what or who is in frame",
-      "action": "what is happening, one movement only",
-      "camera": "slow dolly in",
-      "lighting": "golden hour",
-      "emotion": "hopeful",
+      "subject": "subject description for consistency",
+      "emotion": "{emotion}",
       "scene_type": "environment",
       "sound_profile": "foley",
       "model": "wan2",
-      "color_palette": "warm_amber",
-      "comfyui_prompt": "Cinematic video prompt under 50 words, specific lighting and camera, no text, no crowds",
+      "color_palette": "#hex",
+      "comfyui_prompt": "[Motion], [Camera], [Environment], [Intensity], cinematic documentary, teal and orange grade, anamorphic lens, high-detail textures",
       "lower_third": null
     }}
   ]
 }}
 
 Generate scenes {scene_id_start} through {scene_id_end}.
-model must be "mochi" for human/face scenes, "wan2" for environment/location scenes.
 """
 
 def generate_full_production_package(topic: str) -> dict:
     """
     7-call split strategy:
       Call A (1x): metadata + all 6 chapter narrations  (~1,500 tokens)
-      Call B (6x): 6 scenes per chapter                 (~1,200 tokens each)
-
-    Total: 7 API calls | ~$0.06 | zero truncation risk | auto-retry on fail
-    Output JSON structure is identical to original — all downstream modules unchanged.
+      Call B (6x): 6 scenes per chapter with 'Visual Thread' context.
     """
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     system_prompt = load_system_prompt()
@@ -219,12 +220,12 @@ def generate_full_production_package(topic: str) -> dict:
     )
 
     if "chapters" not in meta or len(meta["chapters"]) != 6:
-        raise RuntimeError(
-            "Expected 6 chapters, got: " + str(len(meta.get("chapters", [])))
-        )
+        raise RuntimeError("Expected 6 chapters, got: " + str(len(meta.get("chapters", []))))
 
     # --- CALL B x6: Scenes per chapter ---
     all_scenes = []
+    prev_visual_context = "No previous scenes. This is the start of the documentary."
+    
     for ch in meta["chapters"]:
         chapter_id  = ch["chapter_id"]
         scene_start = (chapter_id - 1) * 6 + 1
@@ -237,20 +238,25 @@ def generate_full_production_package(topic: str) -> dict:
                 chapter_id=chapter_id,
                 chapter_name=ch["name"],
                 topic=topic,
-                narration=ch["narration"][:400],
+                narration=ch["narration"][:500],
                 scene_id_start=scene_start,
-                scene_id_end=scene_end
+                scene_id_end=scene_end,
+                prev_visual_context=prev_visual_context,
+                emotion=ch.get("emotion", "neutral")
             ),
-            max_tokens=2000,
+            max_tokens=2500,
             call_name="scenes_chapter_" + str(chapter_id)
         )
 
         chapter_scenes = scenes_data.get("scenes", [])
-        if len(chapter_scenes) != 6:
-            logger.warning(
-                "Chapter " + str(chapter_id) + " returned " +
-                str(len(chapter_scenes)) + " scenes instead of 6"
+        if chapter_scenes:
+            # Capture the last scene of this chapter to be the context for the next chapter
+            last_scene = chapter_scenes[-1]
+            prev_visual_context = (
+                f"Chapter {chapter_id} ended with: Subject: {last_scene.get('subject')}, "
+                f"Camera: {last_scene.get('camera')}, Palette: {last_scene.get('color_palette')}"
             )
+        
         all_scenes.extend(chapter_scenes)
 
     # Assemble full package

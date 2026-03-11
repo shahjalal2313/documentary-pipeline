@@ -9,8 +9,11 @@ pip install --upgrade pip setuptools wheel
 # 2. Bridge Numpy (for Python 3.12 compatibility)
 pip install "numpy==1.26.4"
 
-# 3. Isolated Chatterbox Install
-pip install chatterbox-tts --no-deps
+# 3. Performance Optimizations
+pip install sageattention==2.2
+
+# 4. Isolated Chatterbox Install
+pip install chatterbox-tts
 
 # 4. Manual dependency installation
 pip install torch torchaudio transformers librosa tqdm requests loguru torchcodec conformer==0.3.2 diffusers==0.29.0 gradio==5.44.1 omegaconf pykakasi==2.3.0 pyloudnorm resemble-perth==1.0.1 s3tokenizer spacy-pkuseg safetensors==0.5.3 transformers==4.46.3

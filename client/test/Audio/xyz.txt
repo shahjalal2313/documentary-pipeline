@@ -1,0 +1,5 @@
+ok, we have the architecture now, we have already generated a good voice over,Scripts for rise and fall of wework,       
+   generated some random video clips which is not alligned, upscale the video,add foley sound, but all are in test phase-   
+   & 'f:\YA Business\documentary-pipeline\client' the individual code worked. so we are still trying to fix the consisten   
+   scene.
+▄▄▄▄▄▄▄▄▄▄▄

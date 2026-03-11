@@ -8,10 +8,13 @@ runpod.api_key = os.getenv("RUNPOD_API_KEY")
 def get_active_pod():
     try:
         pods = runpod.get_pods()
+        print(f"DEBUG: Found {len(pods)} pods in total.")
         for pod in pods:
+            print(f"DEBUG: Pod '{pod.get('name')}' (ID: {pod.get('id')}) - Status: {pod.get('status')} - Desired: {pod.get('desiredStatus')}")
             if pod.get('desiredStatus') == 'RUNNING':
                 runtime = pod.get('runtime')
                 if not runtime:
+                    print(f"DEBUG: No runtime info for pod {pod.get('id')}")
                     continue
                 
                 ports = runtime.get('ports', [])
@@ -32,6 +35,8 @@ def get_active_pod():
                         "ip": ssh_ip,
                         "port": ssh_port
                     }
+                else:
+                    print(f"DEBUG: Pod {pod.get('id')} has no SSH (port 22) mapping.")
         return None
     except Exception as e:
         print(f"Error fetching pods: {e}")
